@@ -1,0 +1,5 @@
+data/raw/
+data/clean/
+dashboard/*.pbix
+.DS_Store
+Thumbs.db
