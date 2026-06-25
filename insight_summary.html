@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Priced Out of Cornwall? — Housing Affordability Analysis</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #e8e3d9;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #2c3e50;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .card {
+    background: #ffffff;
+    max-width: 760px;
+    width: 100%;
+    border-radius: 2px;
+    padding: 48px 56px 56px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
+
+  /* ── breadcrumb ── */
+  .breadcrumb {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #95a5a6;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .breadcrumb::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 2px;
+    background: #2f6f8f;
+    flex-shrink: 0;
+  }
+
+  /* ── title block ── */
+  h1.title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1a2e3b;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #5d6d7e;
+    margin-bottom: 16px;
+    max-width: 580px;
+  }
+
+  .author-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .author-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #2f6f8f;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .author-name { font-size: 12px; color: #2f6f8f; font-weight: 600; }
+  .author-role { font-size: 11px; color: #95a5a6; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #e5e5e5;
+    margin-bottom: 36px;
+  }
+
+  /* ── sections ── */
+  .section { margin-bottom: 40px; }
+
+  .section-label {
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #2f6f8f;
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  /* section 01 gets left border */
+  .section-01 .section-body {
+    border-left: 3px solid #2f6f8f;
+    padding-left: 20px;
+  }
+
+  .lead-text {
+    font-size: 15px;
+    line-height: 1.65;
+    color: #1a2e3b;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .lead-text strong { color: #2f6f8f; }
+
+  .support-text {
+    font-size: 13px;
+    line-height: 1.65;
+    color: #2f6f8f;
+    font-style: italic;
+    margin-bottom: 16px;
+  }
+
+  /* metadata row */
+  .meta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    border: 1px solid #e8e8e8;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 16px;
+  }
+  .meta-cell {
+    padding: 10px 12px;
+    background: #f8f7f4;
+    border-right: 1px solid #e8e8e8;
+  }
+  .meta-cell:last-child { border-right: none; }
+  .meta-cell-label {
+    font-size: 8.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #95a5a6;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .meta-cell-value {
+    font-size: 11px;
+    color: #2c3e50;
+    line-height: 1.4;
+  }
+  .tag {
+    display: inline-block;
+    background: #e8f4f8;
+    color: #2f6f8f;
+    border-radius: 3px;
+    font-size: 10px;
+    padding: 2px 6px;
+    margin: 1px 2px 1px 0;
+    font-weight: 500;
+  }
+
+  /* ── KPI grid ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .kpi-card {
+    background: #f0f7fa;
+    border-radius: 4px;
+    padding: 20px 20px 16px;
+  }
+  .kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2f6f8f;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .kpi-label {
+    font-size: 11.5px;
+    color: #5d6d7e;
+    line-height: 1.4;
+  }
+  .kpi-label strong { color: #1a2e3b; }
+
+  /* ── evidence section ── */
+  .evidence-heading {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a2e3b;
+    margin-bottom: 12px;
+    margin-top: 20px;
+  }
+  .evidence-heading:first-child { margin-top: 0; }
+
+  .phase-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .phase-year {
+    flex-shrink: 0;
+    width: 80px;
+    font-weight: 700;
+    color: #2f6f8f;
+    font-size: 11px;
+    padding-top: 1px;
+  }
+  .phase-label { font-weight: 600; color: #1a2e3b; }
+  .phase-detail { color: #5d6d7e; }
+
+  /* area table */
+  .area-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+  .area-table th {
+    background: #2f6f8f;
+    color: #fff;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+  }
+  .area-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #2c3e50;
+  }
+  .area-table tr:nth-child(even) td { background: #f5fafc; }
+  .area-table td:last-child { color: #2f6f8f; font-weight: 600; }
+
+  /* ── takeaway ── */
+  .takeaway {
+    background: #1b2d3d;
+    border-radius: 4px;
+    padding: 28px 28px 24px;
+    margin-bottom: 0;
+  }
+  .takeaway .section-label { color: #7d93a8; }
+  .takeaway-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+  .takeaway-stats {
+    font-size: 11px;
+    color: #7d93a8;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── footer ── */
+  .doc-footer {
+    margin-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: #95a5a6;
+    border-top: 1px solid #e5e5e5;
+    padding-top: 14px;
+  }
+  .doc-footer a { color: #2f6f8f; text-decoration: none; }
+  .doc-footer a:hover { text-decoration: underline; }
+
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- breadcrumb -->
+  <div class="breadcrumb">Portfolio Case Study &nbsp;·&nbsp; Housing Affordability</div>
+
+  <!-- title -->
+  <h1 class="title">Priced Out of Cornwall?</h1>
+  <p class="subtitle">How house prices in Cornwall have outpaced local wages — and what 30 years of data reveals about who can still afford to live here.</p>
+
+  <div class="author-chip">
+    <div class="author-avatar">Ed</div>
+    <div>
+      <div class="author-name">Ed</div>
+      <div class="author-role">Data Analyst</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 01 THE QUESTION -->
+  <div class="section section-01">
+    <div class="section-label">01 — The Question</div>
+    <div class="section-body">
+      <p class="lead-text">Cornwall has become one of the least affordable places to live in England relative to what people earn there. A surge in <strong>second homes and holiday lets</strong> has collided with stagnant local wages, pushing ownership out of reach for many residents.</p>
+      <p class="support-text">This project quantifies that gap: how far house prices have pulled away from local wages since 1995, and what that means for the people who live and work here.</p>
+
+      <div class="meta-row">
+        <div class="meta-cell">
+          <div class="meta-cell-label">Data Source</div>
+          <div class="meta-cell-value">HM Land Registry Price Paid Data 1995–2026 (399,805 transactions)</div>
+        </div>
+        <div class="meta-cell">
+          <div class="meta-cell-label">Tools</div>
+          <div class="meta-cell-value">
+            <span class="tag">MySQL</span><span class="tag">Power BI</span><span class="tag">Python</span>
+          </div>
+        </div>
+        <div class="meta-cell">
+          <div class="meta-cell-label">Approach</div>
+          <div class="meta-cell-value">Analysed median prices by area, year, property type, and seasonality. Benchmarked against inflation and wage data.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 KEY FINDINGS -->
+  <div class="section">
+    <div class="section-label">02 — Key Findings</div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-value">£286,000</div>
+        <div class="kpi-label">2025 Cornwall median house price — up from <strong>£49,000</strong> in 1995</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">+484%</div>
+        <div class="kpi-label">Rise in house prices since 1995 — <strong>far ahead</strong> of wage and inflation growth</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">169%</div>
+        <div class="kpi-label">Cumulative RPI inflation 1995–2025 — house prices rose <strong>nearly 3× faster</strong></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">+150%</div>
+        <div class="kpi-label">UK nominal wage growth — <strong>less than a third</strong> of house price growth over the same period</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 THE EVIDENCE -->
+  <div class="section">
+    <div class="section-label">03 — The Evidence</div>
+
+    <div class="evidence-heading">Four phases of the Cornwall housing market</div>
+
+    <div class="phase-row">
+      <div class="phase-year">1995–2007</div>
+      <div><span class="phase-label">The boom. </span><span class="phase-detail">Prices accelerated sharply, rising 35% in a single year (2002). An influx of second-home purchasers drove prices far ahead of local wages.</span></div>
+    </div>
+    <div class="phase-row">
+      <div class="phase-year">2008–2013</div>
+      <div><span class="phase-label">The crash. </span><span class="phase-detail">The financial crisis halved transactions from 12,301 to 6,636. Prices fell modestly and stagnated for six years.</span></div>
+    </div>
+    <div class="phase-row">
+      <div class="phase-year">2014–2019</div>
+      <div><span class="phase-label">Slow recovery. </span><span class="phase-detail">Prices crept up 3–5% per year. Affordability remained stretched but stable.</span></div>
+    </div>
+    <div class="phase-row">
+      <div class="phase-year">2020–2022</div>
+      <div><span class="phase-label">The pandemic surge. </span><span class="phase-detail">Record 25,262 transactions in 2021. Remote workers from London and the South East pushed prices up 10% in a single year, peaking at £295,000.</span></div>
+    </div>
+    <div class="phase-row">
+      <div class="phase-year">2023–2026</div>
+      <div><span class="phase-label">Cooling. </span><span class="phase-detail">Rising interest rates slowed the market. Prices edged back to £286,000 — still historically very high relative to local earnings.</span></div>
+    </div>
+
+    <div class="evidence-heading" style="margin-top:24px;">Price by area — 1995 vs 2025</div>
+    <table class="area-table">
+      <thead>
+        <tr><th>Area</th><th>1995 Median</th><th>2025 Median</th><th>Growth</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Truro</td><td>£54,500</td><td>£336,000</td><td>+517%</td></tr>
+        <tr><td>Falmouth</td><td>£52,500</td><td>£330,625</td><td>+530%</td></tr>
+        <tr><td>Penzance</td><td>£45,950</td><td>£280,000</td><td>+509%</td></tr>
+        <tr><td>Other Cornwall</td><td>£49,950</td><td>£286,000</td><td>+472%</td></tr>
+        <tr><td>Redruth / Camborne</td><td>£39,000</td><td>£245,000</td><td>+528%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 04 THE TAKEAWAY -->
+  <div class="section takeaway">
+    <div class="section-label">04 — The Takeaway</div>
+    <p class="takeaway-text">Over 30 years, Cornwall's housing market decoupled from its labour market. Prices grew nearly five times faster than wages — turning a regional quirk into a structural affordability crisis that wage growth alone cannot close.</p>
+    <div class="takeaway-stats">House prices: +484%&nbsp;&nbsp;·&nbsp;&nbsp;Inflation (RPI): +169%&nbsp;&nbsp;·&nbsp;&nbsp;Wages: +150%</div>
+  </div>
+
+  <!-- footer -->
+  <div class="doc-footer">
+    <span>Priced Out of Cornwall? · 2026</span>
+    <span>Contains HM Land Registry data. Crown copyright 2025. <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank">Open Government Licence v3.0</a></span>
+  </div>
+
+</div>
+</body>
+</html>
